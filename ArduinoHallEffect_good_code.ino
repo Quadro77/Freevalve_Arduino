@@ -26,10 +26,24 @@ void setup() {
 
  void loop()
  {
-  //The compiler says this is needed otherwise the govt. takes my cat
+  //All non essential to opening valves goes in this loop
+   if (hallcounter == 1){
+     //Serial.println(state);
+      Serial.println("missing tooth");
+    }
+   
+   if (state == 0){
+        Serial.print("STATE 1 ");
+        Serial.println(degree);
    }
+   if (state == 1){
+        Serial.print("STATE 2 ");
+        Serial.println(degree);
+   }
+   
+ }
 
-void magnet_detect() {
+void magnet_detect() { // Interupt rutine
       hallcounter ++;
       triggerTime = millis();
       timeGap = triggerTime - last_triggerTime;
@@ -37,34 +51,29 @@ void magnet_detect() {
      
       if (timeGap >= last_timeGap + last_timeGap / 2)
       {
-        //Serial.println(state);
-        Serial.println("missing tooth");
         hallcounter = 1; 
         state++; //This right here is garbage and you know it.
       }
     
       last_timeGap = timeGap;
-      //Serial.println(hallcounter);
+      
     
      degree = hallcounter * 6;
      if ((state % 2) == 0) { //Bool wasn't working so this dumpster fire got started.
-        Serial.print("STATE 1 ");
-        Serial.println(degree);
         if (6 <= degree && degree <= 180) { //EDIT HERE INTAKE
-        digitalWrite(13, HIGH); // sets the digital pin 13 on
+        PORTB = PORTB | B00010000; // sets the digital pin 13 on
         }
         else {
-        digitalWrite(13, LOW);  // sets the digital pin 13 off
+        PORTB = PORTB & B11101111;  // sets the digital pin 13 off
         }
      }
      if ((state % 2) == 1) {
-        Serial.print("STATE 2 ");
-        Serial.println(degree);
+ 
         if (180 <= degree && degree <= 354) { //EDIT HERE EXHAUST
-        digitalWrite(12, HIGH); // sets the digital pin 13 on
+        PORTB = PORTB | B00100000; // sets the digital pin 13 on
         }
         else {
-        digitalWrite(12, LOW);  // sets the digital pin 13 off
+        PORTB = PORTB & B11011111;  // sets the digital pin 13 off
         }
      }
   lasthallstate = hallstate;
